@@ -37,9 +37,33 @@
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 })();
 
-(function () {
+/* ── Message de repli : jamais de grille vide ── */
+function afficherRepli(grid) {
+  grid.style.display = "block";
+  grid.innerHTML = "";
+  const p = document.createElement("p");
+  p.className = "section-note";
+  p.innerHTML =
+    'Sélection en cours de renouvellement.<br>' +
+    'Écrivez à <a href="mailto:contact@nayren.com">contact@nayren.com</a>.';
+  grid.appendChild(p);
+}
+
+(async function () {
   const grid = document.getElementById("grid");
-  if (!grid || typeof PIECES === "undefined") return;
+  if (!grid || typeof chargerPieces !== "function") return;
+
+  let PIECES;
+  try {
+    PIECES = await chargerPieces();
+  } catch (e) {
+    afficherRepli(grid);
+    return;
+  }
+  if (!PIECES.length) {
+    afficherRepli(grid);
+    return;
+  }
 
   PIECES.forEach((p, i) => {
     const card = document.createElement("article");
